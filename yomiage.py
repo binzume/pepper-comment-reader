@@ -23,6 +23,8 @@ class Pepper(PepperBase):
   def on_comment(self, c):
     print(u"{no}({vpos}): {comment}".format(**c))
     line = c['comment'].encode('utf-8')
+    line = re.sub(u"ｗ", "w", line)
+    line = re.sub(u"８", "8", line)
     line = re.sub(r"w{4,}", "www", line)
     line = re.sub(r"8{4,}", "888", line)
   
@@ -39,13 +41,18 @@ class Pepper(PepperBase):
       self.pose(pose, 0.3, True)
       self.say(line)
 
+
+if len(sys.argv) < 4:
+  print("usage: {s} lv12345 email@example.com PASSWORD".format(s = sys.argv[0]))
+  print("usage: {s} lv12345 user_session USER_SESSION_STRING".format(s = sys.argv[0]))
+  exit
+
 lv = sys.argv[1]
 receiver = NicoliveCommentReceiver()
 ## login or set_user_session
-#receiver.login('hoge@example.com', '***passwd***')
-receiver.set_user_session('user_session_00000000_xxxxxxxxxxxxxxxxxxx')
+receiver.login(sys.argv[2], sys.argv[3])
 host = "localhost"
-port = 62470
+port = 9559
 
 pp = Pepper(host,port)
 

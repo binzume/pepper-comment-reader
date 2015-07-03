@@ -12,6 +12,9 @@ class NicoliveCommentReceiver:
     self.opener = urllib2.build_opener(cjhdr)
 
   def login(self, mail, password):
+    if mail == 'user_session':
+      self.set_user_session(password)
+      return True
     values = {'mail_tel' : mail, 'password' : password}
     postdata = urllib.urlencode(values)
     req = urllib2.Request(self.LOGIN_URL, postdata)
@@ -57,12 +60,17 @@ class NicoliveCommentReceiver:
               print(comment)
 
 if __name__ == "__main__":
+  # sample usage
+  if len(sys.argv) < 4:
+    print("usage: {s} lv12345 email@example.com PASSWORD".format(s = sys.argv[0]))
+    print("usage: {s} lv12345 user_session USER_SESSION_STRING".format(s = sys.argv[0]))
+    exit
   lv = sys.argv[1]
   receiver = NicoliveCommentReceiver()
   ## login or set_user_session
-  #receiver.login('hoge@example.com', '***passwd***')
-  receiver.set_user_session('user_session_00000000_xxxxxxxxxxxxxxxxxxx')
+  print(receiver.login(sys.argv[2], sys.argv[3]))
+  #receiver.set_user_session('user_session_00000000_xxxxxxxxxxxxxxxxxxx')
   def on_comment(c):
-    print(u"{no}({vpos}): {comment}".format(**c))
+    print(u"{no} {vpos}: {comment}".format(**c))
   receiver.start(lv, on_comment)
 
